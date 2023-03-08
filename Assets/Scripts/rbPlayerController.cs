@@ -17,13 +17,15 @@ public class rbPlayerController : MonoBehaviour
         SprintJumping
     }
     public PlayerState State;
+    public Collider2D leftTrigger;
+    public Collider2D rightTrigger;
+    private GameObject collidingWith;
     [SerializeField] private float playerSpeed = 1.0f;
     [SerializeField] private float jumpHeight = 0.0f;
     [SerializeField] private bool grounded;
     private Vector2 movementInput = Vector2.zero;
     private bool jumped = false;
     private bool sprintin = false;
-    private bool canAttack = false;
     private bool attacked = false;
     private float stockCounter = 3;
     private float hitMultiplier = 1.0f;
@@ -52,18 +54,38 @@ public class rbPlayerController : MonoBehaviour
     public void OnAttack(InputAction.CallbackContext context)
     {
         attacked = context.action.triggered;
+        Debug.Log(collidingWith);
+        if (collidingWith != null)
+        {
+            Debug.Log(hitMultiplier);
+            float xForce = 20f;
+            if (!sr.flipX)
+            {
+                xForce = -xForce;
+            }
+            collidingWith.GetComponent<Rigidbody2D>().AddForce(new Vector3(xForce, 0, 0) * hitMultiplier);
+            hitMultiplier = hitMultiplier + 0.5f;
+        }
     }
 
-    void OnTriggerEnter(Collider HitScan)
+    void OnTriggerEnter2D(Collider2D HitCheck)
     {
-        if (HitScan.gameObject.Equals("Player"))
+        if (HitCheck.gameObject.tag == "PlayerTarget")
         {
-            canAttack = true;
+            collidingWith = HitCheck.gameObject;
         }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        collidingWith = null;
     }
 
     void Update()
     {
+        rightTrigger.enabled = sr.flipX;
+        leftTrigger.enabled = !sr.flipX;
+
         if (!grounded && sprintin)
         {
             State = PlayerState.SprintJumping;
@@ -109,11 +131,6 @@ public class rbPlayerController : MonoBehaviour
             Destroy(gameObject);
         }
 
-        if (canAttack && attacked)
-        {
-            //rigidbody.AddForce = new Vector3(#, #, #);
-            hitMultiplier = hitMultiplier + 0.5f;
-        }
         sr.flipX = movementInput.x < 0 ? false : (movementInput.x > 0 ? true : sr.flipX);
     }
 
