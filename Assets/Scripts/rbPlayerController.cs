@@ -23,8 +23,10 @@ public class rbPlayerController : MonoBehaviour
     private Vector2 movementInput = Vector2.zero;
     private bool jumped = false;
     private bool sprintin = false;
+    private bool canAttack = false;
     private bool attacked = false;
     private float stockCounter = 3;
+    private float hitMultiplier = 1.0f;
     private SpriteRenderer sr;
 
     private void Start()
@@ -52,14 +54,13 @@ public class rbPlayerController : MonoBehaviour
         attacked = context.action.triggered;
     }
 
-    /*void OnCollisionEnter(Collision col)
-     {
-         if(col.gameObject.tag == "PlayerTarget") // Do not forget assign tag to the field
-         {
-             rb2 = col.gameobject.GetComponent<Rigidbody>();    
-             rb2.AddForce(transform.right * kickForce);
-         }
-     }*/
+    void OnTriggerEnter(Collider HitScan)
+    {
+        if (HitScan.gameObject.Equals("Player"))
+        {
+            canAttack = true;
+        }
+    }
 
     void Update()
     {
@@ -108,10 +109,11 @@ public class rbPlayerController : MonoBehaviour
             Destroy(gameObject);
         }
 
-        /*if (attacked)
+        if (canAttack && attacked)
         {
-
-        }*/
+            //rigidbody.AddForce = new Vector3(#, #, #);
+            hitMultiplier = hitMultiplier + 0.5f;
+        }
         sr.flipX = movementInput.x < 0 ? false : (movementInput.x > 0 ? true : sr.flipX);
     }
 
@@ -122,6 +124,9 @@ public class rbPlayerController : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x / 1.1f, rb.velocity.y);
         }
     }
+
+
+
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Ground" || collision.gameObject.tag == "PlayerTarget")
