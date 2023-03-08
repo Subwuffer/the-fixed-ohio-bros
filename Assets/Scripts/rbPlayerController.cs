@@ -20,6 +20,7 @@ public class rbPlayerController : MonoBehaviour
     public Collider2D leftTrigger;
     public Collider2D rightTrigger;
     private GameObject collidingWith;
+    rbPlayerController PC;
     [SerializeField] private float playerSpeed = 1.0f;
     [SerializeField] private float jumpHeight = 0.0f;
     [SerializeField] private bool grounded;
@@ -28,7 +29,7 @@ public class rbPlayerController : MonoBehaviour
     private bool sprintin = false;
     private bool attacked = false;
     private float stockCounter = 3;
-    private float hitMultiplier = 1.0f;
+    public float hitMultiplier = 1.0f;
     private SpriteRenderer sr;
 
     private void Start()
@@ -63,8 +64,9 @@ public class rbPlayerController : MonoBehaviour
             {
                 xForce = -xForce;
             }
-            collidingWith.GetComponent<Rigidbody2D>().AddForce(new Vector3(xForce, 0, 0) * hitMultiplier);
-            hitMultiplier = hitMultiplier + 0.5f;
+            PC = collidingWith.GetComponent<rbPlayerController>();
+            collidingWith.GetComponent<Rigidbody2D>().AddForce(new Vector3(xForce, 0, 0) * PC.hitMultiplier);
+            PC.hitMultiplier += 0.5f;
         }
     }
 
@@ -124,6 +126,7 @@ public class rbPlayerController : MonoBehaviour
         {
             transform.position = new Vector3(0, 0, 0);
             stockCounter = stockCounter - 1;
+            hitMultiplier = 1f;
         }
 
         if (stockCounter == 0)
