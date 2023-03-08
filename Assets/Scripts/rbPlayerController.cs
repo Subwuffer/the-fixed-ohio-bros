@@ -59,13 +59,14 @@ public class rbPlayerController : MonoBehaviour
         if (collidingWith != null)
         {
             Debug.Log(hitMultiplier);
-            float xForce = 20f;
+            float xForce = 50f;
+            float yForce = 50f;
             if (!sr.flipX)
             {
                 xForce = -xForce;
             }
             PC = collidingWith.GetComponent<rbPlayerController>();
-            collidingWith.GetComponent<Rigidbody2D>().AddForce(new Vector3(xForce, 0, 0) * PC.hitMultiplier);
+            collidingWith.GetComponent<Rigidbody2D>().AddForce(new Vector3(xForce, yForce, 0) * PC.hitMultiplier);
             PC.hitMultiplier += 0.5f;
         }
     }
